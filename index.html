@@ -4,46 +4,101 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Razorpay Payment Integration</title>
+  <style>
+   body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f4f7fa; /* Light background for contrast */
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+margin-left: 80px;
+      align-items: start;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    h1 {
+      color: #333;
+      font-size: 32px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    p {
+      font-size: 18px;
+      margin: 20px 0;
+      color: #555;
+    }
+
+    /* Image Styling */
+    img {
+      max-width: 10%;  /* Limit image size */
+      height: auto;
+      border-radius: 8px;  /* Slightly rounded corners for professionalism */
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Soft shadow for a floating effect */
+    }
+
+    /* Button Styling */
+    #payButton {
+      background-color: #F37254;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 30px;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft button shadow */
+      margin-top: 20px;
+    }
+
+    /* Button Hover Effects */
+    #payButton:hover {
+      background-color: #d85c4e;
+      transform: translateY(-2px);  /* Slight lift effect */
+    }
+
+    #payButton:active {
+      transform: translateY(1px);  /* Slight depress effect on click */
+    }
+
+    /* Container */
+    .container {
+      text-align: center;
+      background-color: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Container shadow for depth */
+      width: 90%;
+      max-width: 500px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Pay to Sana Infotech</h1>
-  
-
-  <label for="amount">Enter Amount (in INR):</label>
-  <input type="number" id="amount" placeholder="Enter amount" min="1" required>
-  
-
-  <button id="payButton">Pay Now</button>
+  <h1>Sana RazorPay</h1>
+  <img src="jio.jpg" alt="Red Saree">
+  <p>Buy one red saree</p>
+  <button id="payButton">Buy Now</button>
 
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     document.getElementById('payButton').onclick = async function () {
       try {
-        const amountInput = document.getElementById('amount').value;
-        const amountInPaise = amountInput * 100; 
-
-        if (!amountInput || amountInPaise <= 0) {
-          alert('Please enter a valid amount');
-          return;
-        }
-
-        
-        const order = await createOrder(amountInPaise);
+        const order = await createOrder();
         if (!order) throw new Error('Failed to create order');
-
 
         const options = {
           key: 'rzp_test_xT9H2pVxmor7bA',  
-          amount: order.amount,  
+          amount: order.amount, 
           currency: order.currency,
           name: 'Sana Infotech',
           description: 'Payment for services',
           image: 'https://example.com/logo.png',
-          order_id: order.id, 
+          order_id: order.id,
           handler: function (response) {
             const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = response;
-            
-            
             verifyPayment(razorpay_order_id, razorpay_payment_id, razorpay_signature);
           },
           theme: {
@@ -51,7 +106,6 @@
           }
         };
 
-       
         const rzp = new Razorpay(options);
         rzp.open();
       } catch (error) {
@@ -60,17 +114,10 @@
       }
     };
 
-
-    async function createOrder(amountInPaise) {
+    async function createOrder() {
       try {
         const response = await fetch('http://localhost:5000/create-order', {
           method: 'POST',  
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            amount: amountInPaise,  
-          }),
         });
 
         if (!response.ok) {
@@ -78,10 +125,10 @@
         }
 
         const data = await response.json();
-        return data; 
+        return data;  
       } catch (error) {
         console.error('Error:', error);
-        return null; 
+        return null;  
       }
     }
 
@@ -104,7 +151,7 @@
         }
 
         const data = await response.json();
-        alert(data.status); 
+        alert(data.status);  
       } catch (error) {
         console.error('Error:', error);
         alert('Payment verification failed. Please try again.');
