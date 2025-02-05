@@ -17,25 +17,26 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Example Node.js backend using Express
+
 app.post('/create-order', async (req, res) => {
-  const { amount } = req.body;
+  const payment_capture = 1;
+  const amount = 50000; 
 
   const options = {
-    amount: amount,  // amount in paise
+    amount: amount, 
     currency: 'INR',
     receipt: 'receipt#1',
+    payment_capture: payment_capture,
   };
 
   try {
     const order = await razorpay.orders.create(options);
-    res.json(order);
+    res.json(order);  
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Error creating order');
+    console.error('Error creating order:', error);
+    res.status(500).json({ error: 'Failed to create order' });
   }
 });
-
 
 
 app.post('/verify-payment', (req, res) => {
