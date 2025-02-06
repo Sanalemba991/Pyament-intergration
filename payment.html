@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Razorpay Payment Integration</title>
+</head>
+<body>
+
+    <!-- Button to trigger the Razorpay payment modal -->
+    <button id="payButton">Pay Now</button>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+        // Function to handle payment when the user clicks the Pay Now button
+        document.getElementById('payButton').onclick = function (e) {
+            // Razorpay payment options
+            var options = {
+                "key": "rzp_test_xT9H2pVxmor7bA",  // Replace with your Razorpay public key
+                "amount": "50000",            // Amount in the smallest currency unit (50000 = ₹500.00)
+                "currency": "INR",            // Currency type (INR for India, USD for the US, etc.)
+                "name": "Your Company Name",
+                "description": "Payment for Product",
+                "image": "https://your-logo-url.com/logo.png",  // Optional logo for the payment modal
+                "handler": function (response) {
+                    // This function is called when the payment is successful
+                    alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+                },
+                "prefill": {
+                    "name": "Customer Name",
+                    "email": "customer@example.com",
+                    "contact": "9999999999"
+                },
+                "notes": {
+                    "address": "Payment for your service"
+                },
+                "theme": {
+                    "color": "#F37254"
+                }
+            };
+
+            // Open Razorpay modal with the specified options
+            var rzp1 = new Razorpay(options);
+            rzp1.open();  // Open the payment popup
+            e.preventDefault();  // Prevent default behavior of the button
+        };
+    </script>
+
+</body>
+</html>
