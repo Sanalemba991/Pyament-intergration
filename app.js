@@ -66,17 +66,27 @@ app.get('/transaction-history', async (req, res) => {
 });
 
 // Route to fetch a specific transaction by ID
-app.get('/transaction/:paymentId', async (req, res) => {
-  const { paymentId } = req.params;
+app.get('/transaction/:contact', async (req, res) => {
+  const { contact } = req.params;
 
   try {
-    const payment = await razorpay.payments.fetch(paymentId);
-    res.json(payment);
+    // Fetch all payments (not ideal for large datasets)
+    const payments = await razorpay.payments.all({ count: 100 }); // Fetch last 100 payments
+
+    // Manually filter payments by contact
+    const filteredPayments = payments.items.filter(payment => payment.contact === contact);
+
+    if (filteredPayments.length === 0) {
+      return res.status(404).json({ message: "No transactions found for this contact number" });
+    }
+
+    res.json(filteredPayments);
   } catch (error) {
     console.error("Error fetching transaction:", error);
-    res.status(500).json({ error: "Failed to fetch transaction details" });
+    res.status(error.statusCode || 500).json({ error: error.error || "Failed to fetch transaction details" });
   }
 });
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
